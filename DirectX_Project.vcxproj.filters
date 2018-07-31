@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{09339fb0-c658-4c6b-b83e-d4562b09b092}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library">
+      <UniqueIdentifier>{9e18c69a-b0ab-40c1-b702-b94a0598651c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library\Header">
+      <UniqueIdentifier>{9fdf725b-d304-433a-ad78-9e2837c2ec23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library\Source">
+      <UniqueIdentifier>{ffd40ef6-4f54-4bff-9dad-3bd7e710ffb5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Library\CreateWindow.h">
+      <Filter>Library\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Main\Game.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Library\CreateWindow.cpp">
+      <Filter>Library\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Main\Game.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+</Project>
