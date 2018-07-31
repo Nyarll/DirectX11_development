@@ -1,9 +1,24 @@
 #include "DirectX_Framework.h"
+#include "vs.h"
+#include "pixel.h"
 
 // 終了時解放処理
 static VOID Cleanup();
 // メッセージプロージャ
 static LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+typedef struct Triangle_s
+{
+	float pos[3];
+	float col[4];
+}Triangle_t;
+
+Triangle_t VertexList[]{
+	{ { -0.5f,  0.5f, 0.5f },{ 1.0f, 0.0f, 0.0f, 1.0f } },
+	{ { 0.5f, -0.5f, 0.5f },{ 0.0f, 1.0f, 0.0f, 1.0f } },
+	{ { -0.5f, -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f, 1.0f } }
+};
+
 
 ID3D11Device* Device = NULL;
 ID3D11DeviceContext* DeviceContext = NULL;
@@ -15,6 +30,19 @@ ID3D11DepthStencilView* DepthStencilView = NULL;
 
 UINT			FeatureLevels = 3;	  // 配列の要素数
 D3D_FEATURE_LEVEL	FeatureLevel; // デバイス作成時に返される機能レベル
+
+D3D11_VIEWPORT ViewPort;
+
+ID3D11Buffer*           VertexBuffer;
+ID3D11InputLayout*      InputLayout;
+
+ID3D11VertexShader*     VertexShader;
+ID3D11PixelShader*      PixelShader;
+
+D3D11_INPUT_ELEMENT_DESC VertexDesc[]{
+	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0,                            0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+};
 
 
 HWND CreateWindowHandle()
@@ -75,22 +103,15 @@ HRESULT InitDirectX(HWND hWnd)
 			}
 		}
 	}
-	//レンダーターゲットビューの作成
-	ID3D11Texture2D *BackBuffer;
-	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&BackBuffer);
-	Device->CreateRenderTargetView(BackBuffer, NULL, &RenderTargetView);
-	BackBuffer->Release();
-	DeviceContext->OMSetRenderTargets(1, &RenderTargetView, NULL);
 
 	//ビューポートの設定
-	D3D11_VIEWPORT vp;
-	vp.Width = WINDOW_WIDTH;
-	vp.Height = WINDOW_HEIGHT;
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	DeviceContext->RSSetViewports(1, &vp);
+	ViewPort.Width = WINDOW_WIDTH;
+	ViewPort.Height = WINDOW_HEIGHT;
+	ViewPort.MinDepth = 0.0f;
+	ViewPort.MaxDepth = 1.0f;
+	ViewPort.TopLeftX = 0;
+	ViewPort.TopLeftY = 0;
+	DeviceContext->RSSetViewports(1, &ViewPort);
 
 	// 深度/ステンシル・テクスチャの作成
 	D3D11_TEXTURE2D_DESC descDepth;
@@ -131,7 +152,70 @@ HRESULT InitDirectX(HWND hWnd)
 		return E_FAIL;
 	}
 
+	//頂点バッファ作成
+	D3D11_BUFFER_DESC bufferDesc;
+	bufferDesc.ByteWidth = sizeof(Triangle_t) * 3;
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags = 0;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA subResourceData;
+	subResourceData.pSysMem = VertexList;
+	subResourceData.SysMemPitch = 0;
+	subResourceData.SysMemSlicePitch = 0;
+
+	hr = Device->CreateBuffer(&bufferDesc, &subResourceData, &VertexBuffer);
+	if (FAILED(hr))
+		return hr;
+
+	//頂点レイアウト作成
+	hr = Device->CreateInputLayout(VertexDesc, ARRAYSIZE(VertexDesc),
+		g_vs_main, sizeof(g_vs_main), &InputLayout);
+	if (FAILED(hr))
+		return hr;
+
+	//頂点シェーダー生成
+	hr = Device->CreateVertexShader(&g_vs_main, sizeof(g_vs_main), NULL, &VertexShader);
+	if (FAILED(hr))
+		return hr;
+
+	//ピクセルシェーダー生成
+	hr = Device->CreatePixelShader(&g_ps_main, sizeof(g_ps_main), NULL, &PixelShader);
+	if (FAILED(hr))
+		return hr;
+
+	//レンダーターゲットビューの作成
+	ID3D11Texture2D *BackBuffer;
+	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&BackBuffer);
+	Device->CreateRenderTargetView(BackBuffer, NULL, &RenderTargetView);
+	BackBuffer->Release();
+	DeviceContext->OMSetRenderTargets(1, &RenderTargetView, NULL);
+
 	return S_OK;
+}
+
+void DrawTriangle()
+{
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; //red,green,blue,alpha
+
+	UINT strides = sizeof(Triangle_t);
+	UINT offsets = 0;
+	DeviceContext->IASetInputLayout(InputLayout);
+	DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &strides, &offsets);
+	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DeviceContext->VSSetShader(VertexShader, NULL, 0);
+	DeviceContext->RSSetViewports(1, &ViewPort);
+	DeviceContext->PSSetShader(PixelShader, NULL, 0);
+	DeviceContext->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
+
+	DeviceContext->ClearRenderTargetView(RenderTargetView, clearColor);
+	DeviceContext->ClearDepthStencilView(DepthStencilView,
+		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	DeviceContext->Draw(4, 0);
+
+	SwapChain->Present(0, 0);
 }
 
 void ScreenClear()
@@ -183,4 +267,10 @@ static LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+
+ID3D11Device* Get3DDevice()
+{
+	return Device;
 }

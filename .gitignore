@@ -5,6 +5,9 @@
 # Prerequisites
 *.d
 
+*.psh
+*.vsh
+
 # Compiled Object files
 *.slo
 *.lo

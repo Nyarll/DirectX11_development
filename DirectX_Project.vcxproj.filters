@@ -17,6 +17,9 @@
     <Filter Include="Library\Source">
       <UniqueIdentifier>{ffd40ef6-4f54-4bff-9dad-3bd7e710ffb5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Library\Shader">
+      <UniqueIdentifier>{17ece32d-8b3e-43a9-bddd-f2392ef1ab8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main\Game.h">
@@ -24,6 +27,12 @@
     </ClInclude>
     <ClInclude Include="Library\DirectX_Framework.h">
       <Filter>Library\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\pixel.h">
+      <Filter>Library\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\vs.h">
+      <Filter>Library\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

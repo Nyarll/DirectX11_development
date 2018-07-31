@@ -33,6 +33,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 				ScreenClear();
 
 				game->Run();
+				game->Draw();
 
 				ScreenFlip();
 			}

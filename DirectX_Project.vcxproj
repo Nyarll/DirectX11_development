@@ -25,6 +25,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Library\DirectX_Framework.h" />
+    <ClInclude Include="Library\pixel.h" />
+    <ClInclude Include="Library\vs.h" />
     <ClInclude Include="Main\Game.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

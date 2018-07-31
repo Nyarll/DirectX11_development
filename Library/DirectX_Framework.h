@@ -14,12 +14,15 @@
 #define WINDOW_WIDTH (640)		// Window ‚Ì•
 #define WINDOW_HEIGHT (480)		// Window ‚Ì‚‚³
 
-
 // WindowHandle ‚Ìì¬
 HWND CreateWindowHandle();
+
+void DrawTriangle();
 
 void ScreenClear();
 HRESULT ScreenFlip();
 
 // Direct3D‚Ì‰Šú‰»ŠÖ”
 HRESULT InitDirectX(HWND hWnd);
+
+ID3D11Device* Get3DDevice();

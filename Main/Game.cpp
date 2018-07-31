@@ -16,3 +16,8 @@ void Game::Run()
 {
 
 }
+
+void Game::Draw()
+{
+	DrawTriangle();
+}
