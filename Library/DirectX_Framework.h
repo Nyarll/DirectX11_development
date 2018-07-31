@@ -22,4 +22,4 @@ void ScreenClear();
 HRESULT ScreenFlip();
 
 // Direct3D‚Ì‰Šú‰»ŠÖ”
-HRESULT InitD3D(HWND hWnd);
+HRESULT InitDirectX(HWND hWnd);

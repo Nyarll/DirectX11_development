@@ -6,6 +6,7 @@ class Game
 {
 public:
 	Game(HWND hWnd);
+	~Game();
 	void Run();
 };
 

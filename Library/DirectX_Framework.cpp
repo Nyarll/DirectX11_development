@@ -1,4 +1,4 @@
-#include "CreateWindow.h"
+#include "DirectX_Framework.h"
 
 // I—¹‰ğ•úˆ—
 static VOID Cleanup();
@@ -38,7 +38,7 @@ HWND CreateWindowHandle()
 }
 
 // Direct3D‚Ì‰Šú‰»ŠÖ”
-HRESULT InitD3D(HWND hWnd)
+HRESULT InitDirectX(HWND hWnd)
 {
 	HRESULT hr = S_OK;
 

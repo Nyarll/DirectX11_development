@@ -19,12 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Library\CreateWindow.cpp" />
+    <ClCompile Include="Library\DirectX_Framework.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Main\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Library\CreateWindow.h" />
+    <ClInclude Include="Library\DirectX_Framework.h" />
     <ClInclude Include="Main\Game.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -19,20 +19,20 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Library\CreateWindow.h">
-      <Filter>Library\Header</Filter>
-    </ClInclude>
     <ClInclude Include="Main\Game.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="Library\DirectX_Framework.h">
+      <Filter>Library\Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Library\CreateWindow.cpp">
-      <Filter>Library\Source</Filter>
-    </ClCompile>
     <ClCompile Include="Main\Game.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Library\DirectX_Framework.cpp">
+      <Filter>Library\Source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

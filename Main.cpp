@@ -1,5 +1,5 @@
 #include "Main/Game.h"
-#include "Library/CreateWindow.h"
+#include "Library/DirectX_Framework.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
@@ -11,12 +11,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 
 	MSG msg;	ZeroMemory(&msg, sizeof(msg));	// メッセージループ用変数の宣言＆初期化
 
-	
-	if (SUCCEEDED(InitD3D(hWnd)))
+	// DirectX の初期化が無事にできたら
+	if (SUCCEEDED(InitDirectX(hWnd)))
 	{
 		// Window 表示
 		ShowWindow(hWnd, SW_SHOW);
 		UpdateWindow(hWnd);
+		
+		// メッセージループ
+		// ×ボタンをマウスカーソルでクリックすると終了する (デフォルト)
 		while (msg.message != WM_QUIT)
 		{
 			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -27,12 +30,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 			else
 			{
 				// ここにゲーム処理
-				game->Run();
 				ScreenClear();
+
+				game->Run();
+
 				ScreenFlip();
 			}
 		}
 	}
 
 	delete game;
+	return 0;
 }
