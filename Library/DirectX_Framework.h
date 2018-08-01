@@ -18,6 +18,7 @@
 HWND CreateWindowHandle();
 
 void DrawTriangle();
+void DrawBox();
 
 void ScreenClear();
 HRESULT ScreenFlip();

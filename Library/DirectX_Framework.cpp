@@ -7,17 +7,25 @@ static VOID Cleanup();
 // メッセージプロージャ
 static LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-typedef struct Triangle_s
+typedef struct Vertex_s
 {
 	float pos[3];
 	float col[4];
-}Triangle_t;
+}Vertex_t;
 
-Triangle_t VertexList[]{
+Vertex_t TriangleList[]{
 	{ { -0.5f,  0.5f, 0.5f },{ 1.0f, 0.0f, 0.0f, 1.0f } },
 	{ { 0.5f, -0.5f, 0.5f },{ 0.0f, 1.0f, 0.0f, 1.0f } },
 	{ { -0.5f, -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f, 1.0f } }
 };
+
+Vertex_t SquareList[]{
+	{ { -0.5f,  0.5f, 0.5f },{ 1.0f, 0.0f, 0.0f, 1.0f } },
+	{ { 0.5f, -0.5f, 0.5f },{ 0.0f, 1.0f, 0.0f, 1.0f } },
+	{ { -0.5f, -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f, 1.0f } },
+	{ { 0.5f,  0.5f, 0.5f },{ 1.0f, 1.0f, 0.0f, 1.0f } }
+};
+
 
 
 ID3D11Device* Device = NULL;
@@ -34,6 +42,7 @@ D3D_FEATURE_LEVEL	FeatureLevel; // デバイス作成時に返される機能レベル
 D3D11_VIEWPORT ViewPort;
 
 ID3D11Buffer*           VertexBuffer;
+ID3D11Buffer*			IndexBuffer;
 ID3D11InputLayout*      InputLayout;
 
 ID3D11VertexShader*     VertexShader;
@@ -44,6 +53,10 @@ D3D11_INPUT_ELEMENT_DESC VertexDesc[]{
 	{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
+WORD IndexList[]{
+	0, 1, 2,
+	0, 3, 1,
+};
 
 HWND CreateWindowHandle()
 {
@@ -153,8 +166,8 @@ HRESULT InitDirectX(HWND hWnd)
 	}
 
 	//頂点バッファ作成
-	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth = sizeof(Triangle_t) * 3;
+	/*D3D11_BUFFER_DESC bufferDesc;
+	bufferDesc.ByteWidth = sizeof(Vertex_t) * 3;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = 0;
@@ -162,11 +175,45 @@ HRESULT InitDirectX(HWND hWnd)
 	bufferDesc.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA subResourceData;
-	subResourceData.pSysMem = VertexList;
+	subResourceData.pSysMem = TriangleList;
 	subResourceData.SysMemPitch = 0;
 	subResourceData.SysMemSlicePitch = 0;
 
 	hr = Device->CreateBuffer(&bufferDesc, &subResourceData, &VertexBuffer);
+	if (FAILED(hr))
+		return hr;*/
+
+	D3D11_BUFFER_DESC vbDesc;
+	vbDesc.ByteWidth = sizeof(Vertex_t) * 4;
+	vbDesc.Usage = D3D11_USAGE_DEFAULT;
+	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbDesc.CPUAccessFlags = 0;
+	vbDesc.MiscFlags = 0;
+	vbDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA vrData;
+	vrData.pSysMem = SquareList;
+	vrData.SysMemPitch = 0;
+	vrData.SysMemSlicePitch = 0;
+
+	D3D11_BUFFER_DESC ibDesc;
+	ibDesc.ByteWidth = sizeof(WORD) * 6;
+	ibDesc.Usage = D3D11_USAGE_DEFAULT;
+	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibDesc.CPUAccessFlags = 0;
+	ibDesc.MiscFlags = 0;
+	ibDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA irData;
+	irData.pSysMem = IndexList;
+	irData.SysMemPitch = 0;
+	irData.SysMemSlicePitch = 0;
+
+	hr = Device->CreateBuffer(&ibDesc, &irData, &IndexBuffer);
+	if (FAILED(hr))
+		return hr;
+
+	hr = Device->CreateBuffer(&vbDesc, &vrData, &VertexBuffer);
 	if (FAILED(hr))
 		return hr;
 
@@ -198,9 +245,9 @@ HRESULT InitDirectX(HWND hWnd)
 
 void DrawTriangle()
 {
-	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; //red,green,blue,alpha
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; //red,green,blue,alpha
 
-	UINT strides = sizeof(Triangle_t);
+	UINT strides = sizeof(Vertex_t);
 	UINT offsets = 0;
 	DeviceContext->IASetInputLayout(InputLayout);
 	DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &strides, &offsets);
@@ -214,6 +261,31 @@ void DrawTriangle()
 	DeviceContext->ClearDepthStencilView(DepthStencilView,
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	DeviceContext->Draw(4, 0);
+
+	SwapChain->Present(0, 0);
+}
+
+void DrawBox()
+{
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; //red,green,blue,alpha
+
+	UINT strides = sizeof(Vertex_t);
+	UINT offsets = 0;
+	DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &strides, &offsets);
+	DeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	DeviceContext->IASetInputLayout(InputLayout);
+
+	DeviceContext->VSSetShader(VertexShader, NULL, 0);
+	DeviceContext->RSSetViewports(1, &ViewPort);
+	DeviceContext->PSSetShader(PixelShader, NULL, 0);
+	DeviceContext->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
+
+	DeviceContext->ClearRenderTargetView(RenderTargetView, clearColor);
+	DeviceContext->ClearDepthStencilView(DepthStencilView,
+		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	DeviceContext->DrawIndexed(6, 0, 0);
 
 	SwapChain->Present(0, 0);
 }

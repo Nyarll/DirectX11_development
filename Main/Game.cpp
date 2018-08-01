@@ -19,5 +19,6 @@ void Game::Run()
 
 void Game::Draw()
 {
-	DrawTriangle();
+	//DrawTriangle();
+	DrawBox();
 }
