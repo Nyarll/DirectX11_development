@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Library/DirectX_Framework.h"
 #include <Windows.h>
 
 class Game

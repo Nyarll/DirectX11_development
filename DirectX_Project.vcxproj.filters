@@ -34,6 +34,9 @@
     <ClInclude Include="Library\vs.h">
       <Filter>Library\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="Library\Vector.h">
+      <Filter>Library\Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main\Game.cpp">
@@ -41,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Library\DirectX_Framework.cpp">
+      <Filter>Library\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Library\Vector.cpp">
       <Filter>Library\Source</Filter>
     </ClCompile>
   </ItemGroup>
