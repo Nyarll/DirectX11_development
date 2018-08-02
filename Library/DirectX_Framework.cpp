@@ -267,15 +267,17 @@ Color_t ColorConversion(UINT color_code)
 }
 
 // (pos1, pos2, pos3)
-void DrawTriangle()
+void DrawTriangle(Vector2D pos1, Vector2D pos2, Vector2D pos3, UINT color_code)
 {
 	HRESULT hr = S_OK;
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; //red,green,blue,alpha
 
+	Color_t color = ColorConversion(color_code);
+
 	Vertex_t TriangleList[]{
-		{ { -0.5f,  0.5f, 0.5f },{ 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ { 0.5f, -0.5f, 0.5f },{ 0.0f, 1.0f, 0.0f, 1.0f } },
-		{ { -0.5f, -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f, 1.0f } }
+		{ { (pos1.x / SCREEN_WIDTH) - 1.0f,  -(pos1.y / SCREEN_HEIGHT) + 1.0f, 0.5f },{ color.red, color.green, color.blue, 1.0f } },
+		{ { (pos3.x / SCREEN_WIDTH) - 1.0f,  -(pos3.y / SCREEN_HEIGHT) + 1.0f, 0.5f },{ color.red, color.green, color.blue, 1.0f } },
+		{ { (pos2.x / SCREEN_WIDTH) - 1.0f,  -(pos2.y / SCREEN_HEIGHT) + 1.0f, 0.5f },{ color.red, color.green, color.blue, 1.0f } }
 	};
 
 	//頂点バッファ作成
@@ -323,12 +325,12 @@ void DrawTriangle()
 	DeviceContext->PSSetShader(PixelShader, NULL, 0);
 	DeviceContext->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
 
-	DeviceContext->ClearRenderTargetView(RenderTargetView, clearColor);
+	//DeviceContext->ClearRenderTargetView(RenderTargetView, clearColor);
 	DeviceContext->ClearDepthStencilView(DepthStencilView,
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	DeviceContext->Draw(4, 0);
 
-	SwapChain->Present(0, 0);
+	//SwapChain->Present(0, 0);
 }
 
 // (Left Up Pos, Right Down Pos, ColorCode)
@@ -412,10 +414,35 @@ void DrawBox(Vector2D pos1, Vector2D pos2, UINT color_code)
 	DeviceContext->PSSetShader(PixelShader, NULL, 0);
 	DeviceContext->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
 
-	DeviceContext->ClearRenderTargetView(RenderTargetView, clearColor);
+	//DeviceContext->ClearRenderTargetView(RenderTargetView, clearColor);
 	DeviceContext->ClearDepthStencilView(DepthStencilView,
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	DeviceContext->DrawIndexed(6, 0, 0);
 
-	SwapChain->Present(0, 0);
+	//SwapChain->Present(0, 0);
+}
+
+void DrawCircle(Vector2D pos, int r, UINT color_code)
+{
+	int i;
+	double deg = 0;
+	double rad = 0;
+	Vector2D pos1, pos2, posbuf;
+
+	posbuf.x = pos.x * 2;
+	posbuf.y = pos.y * 2;
+	pos1 = pos2 = { 1.0f,1.0f };
+
+	for (i = 0; i < 360 * 3; i++)
+	{
+		rad = DEG_TO_RAD(deg);
+		pos1.x = cos(rad) * r + posbuf.x;
+		pos1.y = sin(rad) * r + posbuf.y;
+		rad = DEG_TO_RAD(deg + 1.0);
+		pos2.x = cos(rad) * r + posbuf.x;
+		pos2.y = sin(rad) * r + posbuf.y;
+		DrawTriangle(pos1, pos2, posbuf, color_code);
+
+		deg += 1.0 / 3;
+	}
 }

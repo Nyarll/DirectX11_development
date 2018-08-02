@@ -20,6 +20,16 @@ using namespace DirectX;
 #define SCREEN_WIDTH (WINDOW_WIDTH)
 #define SCREEN_HEIGHT (WINDOW_HEIGHT)
 
+#define SCREEN_LEFT (0)
+#define SCREEN_RIGHT (SCREEN_WIDTH)
+#define SCREEN_TOP (0)
+#define SCREEN_BOTTOM (SCREEN_HEIGHT)
+
+#define PI (3.141592653589793238)
+
+#define DEG_TO_RAD(deg) (deg * ( PI / 180.0 ))
+#define RAD_TO_DEG(rad) (rad * ( 180.0 / PI ))
+
 typedef struct Vertex_s
 {
 	float pos[3];
@@ -65,5 +75,6 @@ HRESULT InitDirectX(HWND hWnd);
 UINT GetColor(UINT red, UINT green, UINT blue);
 Color_t ColorConversion(UINT color_code);
 
-void DrawTriangle();
+void DrawTriangle(Vector2D pos1, Vector2D pos2, Vector2D pos3, UINT color_code);
 void DrawBox(Vector2D pos1, Vector2D pos2, UINT color_code);
+void DrawCircle(Vector2D pos, int r, UINT color_code);
